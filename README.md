@@ -70,6 +70,8 @@ cd install
 ./run.sh
 ```
 
+The iccad2015 contest's official evaluation kit can be found at [Google Drive link](https://drive.google.com/file/d/1BAjEfWxN2dZOtt2-qlgF-qO7D-KHJthX/view?usp=sharing).
+
 ## Caution
 
 The default configuration for Critical Path Extraction uses 8 threads to accommodate various CPU cores and RAM capacities, impacting only the execution speed without affecting timing performance. For reproducing the speeds reported in the paper, adjust the thread count to 52 as specified in `DATE25-TDP/thirdparty/OpenTimer/ot/timer/path.cpp` at line 426.
