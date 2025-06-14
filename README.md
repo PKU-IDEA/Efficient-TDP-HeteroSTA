@@ -34,7 +34,7 @@ The following steps are borrowed from [DREAMPlace](https://github.com/limbo018/D
 - Option 2: Run with CPU on Linux.
 
   ```
-  docker run -it -v $(pwd):/DREAMPlace limbo018/dreamplace:cuda bash
+  docker run -it -v $(pwd):/DATE25-TDP limbo018/dreamplace:cuda bash
   ```
 
 4. ` cd /DATE25-TDP`.
