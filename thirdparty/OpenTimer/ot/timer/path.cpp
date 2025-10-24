@@ -421,27 +421,35 @@ std::vector<Path> Timer::_report_timing(std::vector<Endpoint*>&& epts, size_t K)
   }
     else{
 
-    std::vector<Path> paths; // Private vector for each thread
+    // Pre-allocate paths vector with K nullptr elements (deterministic indexing)
+    std::vector<std::unique_ptr<Path>> paths(K);
 
-    omp_set_num_threads(8); // It was set to 52 and run on 104 cores with 128G RAM in the paper.
-    #pragma omp parallel for schedule(dynamic)
+    omp_set_num_threads(52); // It was set to 52 and run on 104 cores with 128G RAM in the paper.
+    #pragma omp parallel for schedule(static)
     for (int i = 0; i < K; i++) {
       auto sfxt = _sfxt_cache(*epts[i]);
       auto pfxt = _pfxt_cache(sfxt);
       auto node = pfxt._pop();
       if(node == nullptr) {
+        // Leave as nullptr - paths[i] stays nullptr
         continue;
       }
-      auto path = std::make_unique<Path>(node->slack, epts[i]);
-      _recover_datapath(*path, sfxt, node, sfxt._T);
-      #pragma omp critical
-      paths.emplace_back(std::move(*path));
+      paths[i] = std::make_unique<Path>(node->slack, epts[i]);
+      _recover_datapath(*paths[i], sfxt, node, sfxt._T);
     }
 
+    // Move unique_ptr contents to Path objects
+    std::vector<Path> result;
+    result.reserve(K);
+    for (auto& ptr : paths) {
+      if (ptr != nullptr) {
+        result.emplace_back(std::move(*ptr));
+      }
+    }
     
     auto end = std::chrono::high_resolution_clock::now();
   
-  return paths;
+  return result;
   }
   // Generate the prefix tree
   PathHeap heap;
