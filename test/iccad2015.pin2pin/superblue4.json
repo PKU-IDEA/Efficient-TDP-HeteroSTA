@@ -39,5 +39,6 @@
 "enable_net_weighting" : 1,
 "pin2pin_net_weighting": 1,
 "start_iter" : 400,
-"pin2pin_weight" : 0.0000625
+"pin2pin_weight" : 0.0000625,
+"timer_engine" : "heterosta"
 }

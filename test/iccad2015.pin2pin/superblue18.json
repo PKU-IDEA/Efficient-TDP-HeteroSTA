@@ -36,5 +36,6 @@
 "net_weighting_scheme": "pin2pin",
 "momentum_decay_factor" : 0.5,
 "enable_net_weighting" : 1,
-"pin2pin_net_weighting": 1
+"pin2pin_net_weighting": 1,
+"timer_engine" : "heterosta"
 }
