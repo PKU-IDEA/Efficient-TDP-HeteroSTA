@@ -1,5 +1,5 @@
-# DATE'25 "Timing-Driven Global Placement by Efficient Critical Path Extraction"
-We provide the implementation of the method proposed in the paper. It is built upon the popular open-source infrastructure [DREAMPlace](https://github.com/limbo018/DREAMPlace).
+# Efficient-TDP-HeteroSTA
+We integrate HeteroSTA into Efficient-TDP ("Timing-Driven Global Placement by Efficient Critical Path Extraction"). It is built upon the popular open-source infrastructure [DREAMPlace](https://github.com/limbo018/DREAMPlace).
 
 ## Build with Docker
 
@@ -7,7 +7,7 @@ We highly recommend the use of Docker to enable a smooth environment configurati
 
 The following steps are borrowed from [DREAMPlace](https://github.com/limbo018/DREAMPlace) repository. We make minor revisions to make it more clear.
 
-1. Get the code and put it in folder `DATE25-TDP`.
+1. Get the code and put it in folder `Efficient-TDP-HeteroSTA`.
 
 2. Get the container:
 
@@ -28,50 +28,70 @@ The following steps are borrowed from [DREAMPlace](https://github.com/limbo018/D
 - Option 1: Run with GPU on Linux.
 
   ```
-  docker run --gpus 1 -it -v $(pwd):/DATE25-TDP limbo018/dreamplace:cuda bash
+  docker run --gpus 1 -it -v $(pwd):/Efficient-TDP-HeteroSTA limbo018/dreamplace:cuda bash
   ```
 
 - Option 2: Run with CPU on Linux.
 
   ```
-  docker run -it -v $(pwd):/DATE25-TDP limbo018/dreamplace:cuda bash
+  docker run -it -v $(pwd):/Efficient-TDP-HeteroSTA limbo018/dreamplace:cuda bash
   ```
 
-4. ` cd /DATE25-TDP`.
+4. ` cd /Efficient-TDP-HeteroSTA`.
 
 5. Build.
 
    ```
    mkdir build
    cd build
-   cmake .. 
+   cmake .. -DCMAKE_INSTALL_PREFIX=../install -DPython_EXECUTABLE=$(which python)
    make
    make install
    ```
 
-6. Get benchmarks: download the cases here: https://drive.google.com/file/d/1xeauwLR9lOxnYvsK2JGPSY0INQh8VuE4/view?usp=sharing. Unzip the package and put it in the following directory:
+6. Get benchmarks: download the cases here: [Google Drive link for iccad2015.hs ](https://drive.google.com/file/d/1yKABk8yTXU9PCLxjWzW02Ey6Q6IIxJ03/view?usp=drive_link). Unzip the package and put it in the following directory:
+
+   ```
+   install/benchmarks/iccad2015.hs
+   ```
+
+
+## Test
+
+Run our method integrated with HeteroSTA on case superblue1 of ICCAD2015 timing-driven placement contest:
+
+```
+python dreamplace/Placer.py test/iccad2015.pin2pin/$superblue1.json
+```
+
+If you wish to switch to OpenTimer, follow these steps:
+- Download the simplified cases here: [Google Drive link for iccad2015.ot ](https://drive.google.com/file/d/1xeauwLR9lOxnYvsK2JGPSY0INQh8VuE4/view?usp=drive_link). Unzip the package and put it in the following directory:
 
    ```
    install/benchmarks/iccad2015.ot
    ```
 
-## Test
+- In the JSON file, Change the input path from "iccad2015.hs" to "iccad2015.ot" and set the "timer_engine" option from "heterosta" to "opentimer". 
+  
+  
+- Execute the command as shown above.
 
-Run our method on case superblue1 of ICCAD2015 timing-driven placement contest:
+## Evaluation
+The iccad2015 contest's official evaluation kit can be found at [Google Drive link for evaluation kit](https://drive.google.com/file/d/1VI9S27KQOMoqcHIN29wTYRr-4NxNjtKS/view?usp=sharing).
 
-```
-python dreamplace/Placer.py test/iccad2015.pin2pin/$case.json
-```
+- for iccad2015 contest's official evaluation kit download the cases here: [Google Drive link for iccad2015 ](https://drive.google.com/file/d/1PnL0w8_Yh5g_xOC5HdkSbjJsTgg85ZH5/view?usp=sharing)
 
-Or you can run all 8 cases by:
+## Non-deterministic bug fixes
+The non-deterministic bug in the original Efficient-TDP are caused by two reasons: 
+- Applying atomicAdd operations to floating point numbers in "dreamplace/ops/pin2pin_attraction/src/pin2pin_attraction_cuda_kernel.cu"
+- Dynamic path insertion by different threads in "thirdparty/OpenTimer/ot/timer/path.cpp"
+We have fixed these bugs, and you may refer to the files for the specific implementation details.
 
-```
-cd install
-./run.sh
-```
+## Clarification on the Cases
+The differences between the cases stem from the SDC files: 
+- The iccad2015 contest's official evaluation kit uses the official datasets 
+- OpenTimer utilizes the datasets with simplified SDC commands, due to its limited sdc command support.
+- HeteroSTA utilizes datasets derived from the official ones, with double-clock and clock propagation SDC commands added, to eliminate discrepancies arising from the oversight of half-clock periods by both the official kit and OpenTimer.
 
-The iccad2015 contest's official evaluation kit can be found at [Google Drive link](https://drive.google.com/file/d/1BAjEfWxN2dZOtt2-qlgF-qO7D-KHJthX/view?usp=sharing).
 
-## Caution
 
-The default configuration for Critical Path Extraction uses 8 threads to accommodate various CPU cores and RAM capacities, impacting only the execution speed without affecting timing performance. For reproducing the speeds reported in the paper, adjust the thread count to 52 as specified in `DATE25-TDP/thirdparty/OpenTimer/ot/timer/path.cpp` at line 426.
