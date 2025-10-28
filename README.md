@@ -61,7 +61,7 @@ The following steps are borrowed from [DREAMPlace](https://github.com/limbo018/D
 Run our method integrated with HeteroSTA on case superblue1 of ICCAD2015 timing-driven placement contest:
 
 ```
-python dreamplace/Placer.py test/iccad2015.pin2pin/$superblue1.json
+python dreamplace/Placer.py test/iccad2015.pin2pin/superblue1.json
 ```
 
 If you wish to switch to OpenTimer, follow these steps:
