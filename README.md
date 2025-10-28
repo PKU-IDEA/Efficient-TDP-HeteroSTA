@@ -1,6 +1,9 @@
 # Efficient-TDP-HeteroSTA
 We integrate HeteroSTA into Efficient-TDP ("Timing-Driven Global Placement by Efficient Critical Path Extraction"). It is built upon the popular open-source infrastructure [DREAMPlace](https://github.com/limbo018/DREAMPlace).
 
+## Get your HeteroSTA license
+Obtain a free license by visiting the website [HeterSTA](https://heterosta.pkueda.org.cn/#getting-started), then replace the existing license with the new one in the file: dreamplace/ops/timing_heterosta/src/timing_hs_io_cpp.cpp.
+
 ## Build with Docker
 
 We highly recommend the use of Docker to enable a smooth environment configuration.
@@ -61,7 +64,7 @@ The following steps are borrowed from [DREAMPlace](https://github.com/limbo018/D
 Run our method integrated with HeteroSTA on case superblue1 of ICCAD2015 timing-driven placement contest:
 
 ```
-python dreamplace/Placer.py test/iccad2015.pin2pin/$superblue1.json
+python dreamplace/Placer.py test/iccad2015.pin2pin/superblue1.json
 ```
 
 If you wish to switch to OpenTimer, follow these steps:
