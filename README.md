@@ -2,7 +2,7 @@
 We integrate HeteroSTA into Efficient-TDP ("Timing-Driven Global Placement by Efficient Critical Path Extraction"). It is built upon the popular open-source infrastructure [DREAMPlace](https://github.com/limbo018/DREAMPlace).
 
 ## Get your HeteroSTA license
-Obtain a free license by visiting the website [HeterSTA](https://heterosta.pkueda.org.cn/#getting-started), then replace the existing license with the new one in the file: dreamplace/ops/timing_heterosta/src/timing_hs_io_cpp.cpp.
+Obtain a free license by visiting the website [HeterSTA](https://heterosta.pkueda.org.cn/#getting-started), then replace the existing license with the new one in the file: dreamplace/ops/timing_heterosta/src/timing_hs_io_cpp.cpp. You can also get the newest version of HeteroSTA on the website.
 
 ## Build with Docker
 
