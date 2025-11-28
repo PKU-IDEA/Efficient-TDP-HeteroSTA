@@ -8,7 +8,14 @@
 #include "utility/src/torch.h"
 #include "utility/src/utils.h"
 
+// Forward declarations
 DREAMPLACE_BEGIN_NAMESPACE
+
+// Explicit computation mode enumeration 
+enum ComputationMode {
+    FORWARD_MODE = 0,
+    BACKWARD_MODE = 1
+};
 
 template <typename T>
 int pin2pinAttractionCudaLauncher(
@@ -16,16 +23,20 @@ int pin2pinAttractionCudaLauncher(
   const int *pairs, // Pin pairs (flat array of indices)
   const T *weights, // Weights for each pair
   int num_pairs,
+  int num_pins, // Add actual number of pins parameter
   T *total_distance,
   const T *grad_tensor,
-  T *grad_x_tensor, T *grad_y_tensor
+  T *grad_x_tensor, T *grad_y_tensor,
+  bool deterministic_flag,
+  ComputationMode computation_mode
 );
 
 
 std::vector<at::Tensor> pin2pin_attraction_forward(
     at::Tensor pin_pos,
     at::Tensor pairs,
-    at::Tensor weights
+    at::Tensor weights,
+    bool deterministic
 ) {
   CHECK_FLAT_CUDA(pin_pos);
   CHECK_EVEN(pin_pos);
@@ -52,15 +63,21 @@ std::vector<at::Tensor> pin2pin_attraction_forward(
             // dict pin2pin_net_weight
             DREAMPLACE_TENSOR_DATA_PTR(pairs, int),
             DREAMPLACE_TENSOR_DATA_PTR(weights, scalar_t),
-            // int num_pins
+            // int num_pairs
             num_pairs,
+            // int num_pins
+            num_pins,
             // forward output total_distance
             DREAMPLACE_TENSOR_DATA_PTR(total_distance, scalar_t),
             // const T *grad_tensor
             nullptr,
             // T *grad_x_tensor, *grad_y_tensor
             nullptr,
-            nullptr
+            nullptr,
+            // bool deterministic_flag
+            deterministic,
+            // ComputationMode computation_mode
+            FORWARD_MODE
         );
       });
   return {total_distance};
@@ -70,7 +87,8 @@ at::Tensor pin2pin_attraction_backward(
     at::Tensor grad,
     at::Tensor pin_pos,
     at::Tensor pairs,
-    at::Tensor weights
+    at::Tensor weights,
+    bool deterministic
 ) {
   CHECK_FLAT_CUDA(pin_pos);
   CHECK_EVEN(pin_pos);
@@ -97,15 +115,21 @@ at::Tensor pin2pin_attraction_backward(
             // dict pin2pin_net_weight
             DREAMPLACE_TENSOR_DATA_PTR(pairs, int),
             DREAMPLACE_TENSOR_DATA_PTR(weights, scalar_t),
-            // int num_pins
+            // int num_pairs
             num_pairs,
+            // int num_pins
+            num_pins,
             // forward output total_distance
             nullptr,
             // T *grad_tensor
             DREAMPLACE_TENSOR_DATA_PTR(grad, scalar_t),
             // T *grad_x_tensor, *grad_y_tensor
             DREAMPLACE_TENSOR_DATA_PTR(grad_out, scalar_t),
-            DREAMPLACE_TENSOR_DATA_PTR(grad_out, scalar_t) + num_pins
+            DREAMPLACE_TENSOR_DATA_PTR(grad_out, scalar_t) + num_pins,
+            // bool deterministic_flag
+            deterministic,
+            // ComputationMode computation_mode
+            BACKWARD_MODE
           );
       });
   return grad_out;
@@ -115,7 +139,9 @@ DREAMPLACE_END_NAMESPACE
 
 PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
   m.def("forward", &DREAMPLACE_NAMESPACE::pin2pin_attraction_forward,
-        "Pin2PinAttraction forward (CUDA)");
+        "Pin2PinAttraction forward (CUDA)",
+        py::arg("pin_pos"), py::arg("pairs"), py::arg("weights"), py::arg("deterministic") = true);
   m.def("backward", &DREAMPLACE_NAMESPACE::pin2pin_attraction_backward,
-        "Pin2PinAttraction backward (CUDA)");
+        "Pin2PinAttraction backward (CUDA)",
+        py::arg("grad"), py::arg("pin_pos"), py::arg("pairs"), py::arg("weights"), py::arg("deterministic") = true);
 }

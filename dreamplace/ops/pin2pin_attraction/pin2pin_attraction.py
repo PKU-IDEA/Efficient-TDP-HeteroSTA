@@ -1,8 +1,5 @@
 ##
 # @file   pin2pin_attraction.py (modified weighted_average_wirelength.py)
-# @author Yibo Lin
-# @date   Jun 2018
-# @brief  Compute weighted-average wirelength according to e-place
 #
 
 import time
@@ -31,7 +28,8 @@ class Pin2PinAttractionFunction(Function):
         pin_pos,
         pin_mask,
         pin2pin_net_weight,
-        pairs, weights, length
+        pairs, weights, length,
+        deterministic=False
     ):
         """
         @param pin_pos pin location (x array, y array)
@@ -45,6 +43,7 @@ class Pin2PinAttractionFunction(Function):
         ctx.pairs = pairs
         ctx.weights = weights
         ctx.length = length
+        ctx.deterministic = deterministic
         if pin_pos.is_cuda:
             if length[0] == 0:
                 return torch.zeros(1).to(pin_pos.device)
@@ -52,7 +51,8 @@ class Pin2PinAttractionFunction(Function):
             output = func(
                 pin_pos.view(pin_pos.numel()),
                 pairs[:2*length[0]],
-                weights[:length[0]]
+                weights[:length[0]],
+                deterministic
             )
         else:
             func = pin2pin_attraction_cpp.forward
@@ -73,13 +73,14 @@ class Pin2PinAttractionFunction(Function):
         tt = time.time()
         if grad_pos.is_cuda:
             if ctx.length[0] == 0:
-                return None, None, None, None, None, None
+                return None, None, None, None, None, None, None
             func = pin2pin_attraction_cuda.backward
             output = func(
                 grad_pos,
                 ctx.pin_pos,
                 ctx.pairs[:2*ctx.length[0]],
-                ctx.weights[:ctx.length[0]]
+                ctx.weights[:ctx.length[0]],
+                ctx.deterministic
             )
         else:
             func = pin2pin_attraction_cpp.backward
@@ -96,7 +97,7 @@ class Pin2PinAttractionFunction(Function):
         output[output.numel() // 2:].masked_fill_(ctx.pin_mask, 0.0)
         # print("pin2pin grad: ", torch.sum(output.norm()), output, torch.norm(output, p=float('inf')))
 
-        return output, None, None, None, None, None
+        return output, None, None, None, None, None, None
 
 
 
@@ -112,7 +113,8 @@ class Pin2PinAttraction(nn.Module):
                  pin2pin_net_weight,
                  pairs,
                  weights,
-                 length
+                 length,
+                 deterministic=False
     ):
         """
         @brief initialization
@@ -124,6 +126,7 @@ class Pin2PinAttraction(nn.Module):
         self.pairs = pairs
         self.weights = weights
         self.length = length
+        self.deterministic = deterministic
 
     def forward(self, pin_pos):
         return Pin2PinAttractionFunction.apply(
@@ -132,7 +135,8 @@ class Pin2PinAttraction(nn.Module):
             self.pin2pin_net_weight,
             self.pairs,
             self.weights,
-            self.length
+            self.length,
+            self.deterministic
         )
         
 

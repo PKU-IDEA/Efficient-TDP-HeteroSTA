@@ -7,5 +7,5 @@ install(
     )
 
 install(
-    DIRECTORY iccad2015.pin2pin DESTINATION ${PROJECT_NAME}
+    DIRECTORY iccad2015.hs DESTINATION ${PROJECT_NAME}
     )

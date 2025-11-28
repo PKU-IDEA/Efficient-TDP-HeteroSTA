@@ -525,7 +525,8 @@ class PlaceObj(nn.Module):
             pin_mask=data_collections.pin_mask_ignore_fixed_macros,
             pairs=data_collections.pairs,
             weights=data_collections.weights,
-            length=placedb.length)
+            length=placedb.length,
+            deterministic = params.deterministic_flag)
         def build_pin2pin_op(pos):
             return pin2pin_attraction_op(pin_pos_op(pos))
         return build_pin2pin_op
