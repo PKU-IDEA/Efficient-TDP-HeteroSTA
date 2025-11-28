@@ -309,7 +309,7 @@ void updateNetWeightCppLauncher(
 		if (wns < 0.0)
 		{
 			//auto setup_path_extract_start = std::chrono::steady_clock::now();
-			PBAPathCollectionCppInterface* path_interface_max = heterosta_report_paths(&sta, num_paths_max, nworst, slack_threshold, split_endpoint_rf, true, use_cuda,result_use_cuda);
+			PBAPathCollectionCppInterface* path_interface_max = heterosta_report_paths(&sta, num_paths_max, nworst,split_endpoint_rf,slack_threshold, true, use_cuda,result_use_cuda);
 			//auto setup_path_extract_end = std::chrono::steady_clock::now();
 			//dreamplacePrint(kINFO, "setup Path extraction time: %f s\n",
 			//std::chrono::duration_cast<std::chrono::milliseconds>(setup_path_extract_end - setup_path_extract_start).count() * 0.001);
@@ -385,7 +385,7 @@ void updateNetWeightCppLauncher(
 		if(wns_hold<0.0)
 		{
 			//auto hold_path_extract_start = std::chrono::steady_clock::now();
-			PBAPathCollectionCppInterface* path_interface_min = heterosta_report_paths(&sta, num_paths_min, nworst, slack_threshold, split_endpoint_rf, false, use_cuda,result_use_cuda);
+			PBAPathCollectionCppInterface* path_interface_min = heterosta_report_paths(&sta, num_paths_min, nworst, split_endpoint_rf,slack_threshold, false, use_cuda,result_use_cuda);
 			//auto hold_path_extract_end = std::chrono::steady_clock::now();
 			//dreamplacePrint(kINFO, "hold Path extraction time: %f s\n",
 			//	std::chrono::duration_cast<std::chrono::milliseconds>(hold_path_extract_end - hold_path_extract_start).count() * 0.001);
