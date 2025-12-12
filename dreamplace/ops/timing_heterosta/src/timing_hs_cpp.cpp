@@ -232,7 +232,7 @@ void updateNetWeightCppLauncher(
     auto beg = std::chrono::steady_clock::now();
 	// Get WNS/TNS from HeteroSTA
 	float wns, tns;
-	bool success = heterosta_report_wns_tns(&sta, &wns, &tns, true,false);
+	bool success = heterosta_report_wns_tns_max(&sta, &wns, &tns,false);
 
 	// Get pin slacks from HeteroSTA
 	static std::vector<float> slack_data;
@@ -296,9 +296,9 @@ void updateNetWeightCppLauncher(
 		bool split_endpoint_rf = true;
         bool result_use_cuda = false;
 		float wns, tns,wns_hold, tns_hold;
-		bool success = heterosta_report_wns_tns(&sta, &wns, &tns, true, use_cuda);
+		bool success = heterosta_report_wns_tns_max(&sta, &wns, &tns, use_cuda);
 		dreamplacePrint(kINFO,"node_id !=last_node\n");
-		heterosta_report_wns_tns(&sta, &wns_hold, &tns_hold, false, use_cuda);
+		heterosta_report_wns_tns_min(&sta, &wns_hold, &tns_hold, use_cuda);
 		dreamplacePrint(kINFO,"setup wns:%f,tns:%f\n",wns,tns);
 		dreamplacePrint(kINFO,"hold wns:%f,tns:%f\n",wns_hold,tns_hold);
 		int num_unique_pairs = 0;
@@ -461,19 +461,6 @@ void updateNetWeightCppLauncher(
 		
 		}
 		
-
-		/*
-		if(flag)
-		{
-			std::string file_path = "heterosta_paths_dump_setup.txt";
-			heterosta_dump_paths_setup_to_file(&sta, std::min(100,num_paths_max), nworst, true, file_path.c_str(), use_cuda);
-			//file_path = "heterosta_paths_dump_hold.txt";
-			//heterosta_dump_paths_to_file(&sta, std::min(100,num_paths_min), nworst, true,false, file_path.c_str(), use_cuda);
-			flag = false;
-		}
-		*/
-
-		// #pragma omp parallel for num_threads(52)
 		auto endT = std::chrono::steady_clock::now();
         dreamplacePrint(kINFO, "finish net-weighting (%f s)\n",
             std::chrono::duration_cast<std::chrono::milliseconds>(

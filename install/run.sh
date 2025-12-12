@@ -1,10 +1,10 @@
-cd ..
-cd build
-cmake ..
-make -j 8
-make install -j 8
-cd ..
-cd install
+#cd ..
+#cd build
+#cmake ..
+#make -j 8
+#make install -j 8
+#cd ..
+#cd install
 
 cases=("superblue18")
 # cases=("superblue1" "superblue3" "superblue4" "superblue5" "superblue7" "superblue10" "superblue16" "superblue18")

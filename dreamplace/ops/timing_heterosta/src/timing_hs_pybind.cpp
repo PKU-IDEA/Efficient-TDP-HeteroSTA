@@ -112,7 +112,7 @@ PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
         .def("dump_paths_setup_to_file", [](DREAMPLACE_NAMESPACE::TimerWrapper& wrapper, uintptr_t num_paths, 
                                             uintptr_t nworst, const std::string& file_path,
                                             bool use_cuda) {
-            heterosta_dump_paths_setup_to_file(wrapper.get_raw_timer(), num_paths, nworst, file_path.c_str(), use_cuda);
+            heterosta_dump_paths_max_to_file(wrapper.get_raw_timer(), num_paths, nworst, file_path.c_str(), use_cuda);
         }, "Dump timing report to file", 
            pybind11::arg("num_paths"), pybind11::arg("nworst"), 
            pybind11::arg("file_path"), pybind11::arg("use_cuda") = false)
@@ -221,7 +221,7 @@ PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
             // Add debug information about timing state
             STAHoldings* sta = wrapper.get_raw_timer();
             
-            bool success = heterosta_report_wns_tns(sta, &wns, &tns, true, use_cuda);
+            bool success = heterosta_report_wns_tns_max(sta, &wns, &tns, use_cuda);
             
             if (success) {
                 DREAMPLACE_NAMESPACE::dreamplacePrint(DREAMPLACE_NAMESPACE::kDEBUG, "WNS/TNS Report: WNS=%.3f, TNS=%.3f (gpu=%s)\n", 
@@ -240,7 +240,7 @@ PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
 
     m.def("report_wns", [](DREAMPLACE_NAMESPACE::TimerWrapper& wrapper, bool use_cuda) {
             float wns, tns; 
-            if (heterosta_report_wns_tns(wrapper.get_raw_timer(), &wns, &tns, true, use_cuda)) {
+            if (heterosta_report_wns_tns_max(wrapper.get_raw_timer(), &wns, &tns, use_cuda)) {
                 return wns;
             }
             return std::nanf("");
@@ -248,7 +248,7 @@ PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
 
     m.def("report_tns", [](DREAMPLACE_NAMESPACE::TimerWrapper& wrapper, bool use_cuda) {
             float wns, tns; 
-            if (heterosta_report_wns_tns(wrapper.get_raw_timer(), &wns, &tns, true, use_cuda)) {
+            if (heterosta_report_wns_tns_max(wrapper.get_raw_timer(), &wns, &tns, use_cuda)) {
                 return tns;
             }
             return std::nanf("");
@@ -256,7 +256,7 @@ PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
     
     m.def("report_wns_hold", [](DREAMPLACE_NAMESPACE::TimerWrapper& wrapper, bool use_cuda) {
             float wns, tns; 
-            if (heterosta_report_wns_tns(wrapper.get_raw_timer(), &wns, &tns, false, use_cuda)) {
+            if (heterosta_report_wns_tns_min(wrapper.get_raw_timer(), &wns, &tns, use_cuda)) {
                 return wns;
             }
             return std::nanf("");
@@ -264,7 +264,7 @@ PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
 
     m.def("report_tns_hold", [](DREAMPLACE_NAMESPACE::TimerWrapper& wrapper, bool use_cuda) {
             float wns, tns; 
-            if (heterosta_report_wns_tns(wrapper.get_raw_timer(), &wns, &tns, false, use_cuda)) {
+            if (heterosta_report_wns_tns_min(wrapper.get_raw_timer(), &wns, &tns, use_cuda)) {
                 return tns;
             }
             return std::nanf("");
