@@ -1,8 +1,9 @@
 # Efficient-TDP-HeteroSTA
 We integrate HeteroSTA into Efficient-TDP ("Timing-Driven Global Placement by Efficient Critical Path Extraction"). It is built upon the popular open-source infrastructure [DREAMPlace](https://github.com/limbo018/DREAMPlace).
+This fork achieves **5.7x end-to-end speedup** compared to the original implementation, with no quality degradation. For more details, please refer to our [paper](https://arxiv.org/abs/2511.11660).
 
 ## Get your HeteroSTA license
-Obtain a free license by visiting the website [HeteroSTA](https://heterosta.pkueda.org.cn/#getting-started), then set it as an environment virable "HeteroSTA_Lic".
+Obtain a free license by visiting the website [HeteroSTA](https://heterosta.pkueda.org.cn/#getting-started), then set it as an environment variable "HeteroSTA_Lic".
 
 ## Build with Docker
 
@@ -76,6 +77,16 @@ The non-deterministic bug in the original Efficient-TDP are caused by two reason
 - Applying atomicAdd operations to floating point numbers in "dreamplace/ops/pin2pin_attraction/src/pin2pin_attraction_cuda_kernel.cu"
 - Dynamic path insertion by different threads in "thirdparty/OpenTimer/ot/timer/path.cpp"
 We have fixed these bugs, and you may refer to the files for the specific implementation details.
+
+## Cite
+```
+@inproceedings{guo2026heterosta,
+  title        = {{HeteroSTA}: A {CPU-GPU} Heterogeneous Static Timing Analysis Engine with Holistic Industrial Design Support},
+  author       = {Guo, Zizheng and Liu, Haichuan and Shi, Xizhe and Hua, Shenglu and Zhang, Zuodong and Zhao, Chunyuan and Wang, Runsheng and Lin, Yibo},
+  booktitle    = {IEEE/ACM Asia and South Pacific Design Automation Conference (ASPDAC)},
+  year         = {2026},
+}
+```
 
 
 
